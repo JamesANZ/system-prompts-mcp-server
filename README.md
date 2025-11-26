@@ -7,6 +7,7 @@ The original prompt archive README now lives under `prompts/README.md`.
 ---
 
 ## Features
+
 - **Automatic discovery** – every text/yaml/json prompt in `prompts/` (or any directory you point to) is scanned and exposed as an MCP tool.
 - **Model-aware suggestions** – `get_prompt_suggestion` ranks prompts against the LLM you’re using (Claude, GPT, Gemini, etc.) and the keywords you provide.
 - **Quick browsing** – `list_prompts` filters by service, flavor (`summary`, `system`, `tools`), or provider hints.
@@ -23,9 +24,24 @@ The original prompt archive README now lives under `prompts/README.md`.
   - `lib/` helpers for slugging, LLM detection, and ranking
 - `dist/` – compiled JavaScript (created by the build step)
 - `prompts/` – full prompt library and original documentation
+
 ---
 
 ## Getting Started
+
+### Installing in Cursor
+
+You can install this MCP server directly in Cursor using the one-click install link:
+
+**🔗 [Install in Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=system-prompts-mcp&config=eyJzeXN0ZW0tcHJvbXB0cy1tY3AiOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJzeXN0ZW0tcHJvbXB0cy1tY3Atc2VydmVyIl19fQ==)**
+
+```
+cursor://anysphere.cursor-deeplink/mcp/install?name=system-prompts-mcp&config=eyJzeXN0ZW0tcHJvbXB0cy1tY3AiOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJzeXN0ZW0tcHJvbXB0cy1tY3Atc2VydmVyIl19fQ==
+```
+
+This will automatically configure the MCP server using `npx`. No API keys are required.
+
+### Install from Source
 
 ```bash
 npm install
@@ -49,6 +65,30 @@ npm run dev
 **Environment variables**
 
 - `PROMPT_LIBRARY_ROOT` (optional) – override the prompt root. If unset, the server automatically prefers `prompts/` (when available) and falls back to the repository root.
+
+---
+
+## Adding Your Own System Prompts
+
+You can add your own prompts by placing files in the `prompts/` directory. The server automatically discovers and exposes them as MCP tools.
+
+**Supported formats:** `.txt`, `.md`, `.yaml`, `.yml`, `.json`
+
+**Directory structure:**
+- Directory names become the service name
+- File names create tool variants
+- Files are automatically classified as system prompts, tools, or summaries
+
+**Example:**
+```
+prompts/My Service/
+  ├── System Prompt.txt     → Tool: "my-service-system-prompt-system"
+  └── tools.json            → Tool: "my-service-tools-tools"
+```
+
+After adding prompts, restart the MCP server. Use `list_prompts` to find your custom prompts or call them directly by their tool name.
+
+To use a different directory, set the `PROMPT_LIBRARY_ROOT` environment variable.
 
 ---
 
@@ -110,40 +150,28 @@ Restart Claude Desktop to load the new MCP server, then ask for prompts by name 
 - `npm run dev` – run with `ts-node` for quick iteration
 - `npm run lint` – type-check without emitting files
 
----
+Contributions welcome—feel free to adapt the discovery logic, add tests, or extend metadata inference for new prompt formats.
 
-## 🛠 Roadmap & Feedback
+## Donate
 
-> Open an issue.
+If you find this project useful, consider supporting it with Bitcoin:
 
-> **Latest Update:** 02/12/2025
+**⚡ Lightning Network**
 
----
+<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/lightning.jpeg" alt="Lightning QR Code" width="120" />
 
-## 🔗 Connect With Me
+<code>lnbc1pjhhsqepp5mjgwnvg0z53shm22hfe9us289lnaqkwv8rn2s0rtekg5vvj56xnqdqqcqzzsxqyz5vqsp5gu6vh9hyp94c7t3tkpqrp2r059t4vrw7ps78a4n0a2u52678c7yq9qyyssq7zcferywka50wcy75skjfrdrk930cuyx24rg55cwfuzxs49rc9c53mpz6zug5y2544pt8y9jflnq0ltlha26ed846jh0y7n4gm8jd3qqaautqa</code>
 
-- **X:** [NotLucknite](https://x.com/NotLucknite)
-- **Discord**: `x1xhlol`
-- **Email**: `lucknitelol@pm.me`
+**₿ On-Chain**
 
----
+<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/onchain.jpg" alt="Bitcoin Address QR Code" width="120" />
 
-## 🛡️ Security Notice for AI Startups
+<code>[bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp](https://mempool.space/address/bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp)</code>
 
-> ⚠️ **Warning:** If you're an AI startup, make sure your data is secure. Exposed prompts or AI models can easily become a target for hackers.
+**Ξ Ethereum / EVM Networks**
 
-> 🔐 **Important:** Interested in securing your AI systems?  
-> Check out **[ZeroLeaks](https://zeroleaks.io/)**, a service designed to help startups **identify and secure** leaks in system instructions, internal tools, and model configurations. **Get a free AI security audit** to ensure your AI is protected from vulnerabilities.
+<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/ethereum.jpg" alt="Ethereum Address QR Code" width="120" />
 
+<code>[0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f](https://etherscan.io/address/0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f)</code>
 
-## 📊 Star History
-
-<a href="https://www.star-history.com/#x1xhlol/system-prompts-and-models-of-ai-tools&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=x1xhlol/system-prompts-and-models-of-ai-tools&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=x1xhlol/system-prompts-and-models-of-ai-tools&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=x1xhlol/system-prompts-and-models-of-ai-tools&type=Date" />
-  </picture>
-</a>
-
-⭐ **Drop a star if you find this useful!**
+*Donations from any EVM-compatible network (Ethereum, Polygon, Arbitrum, Optimism, BSC, Avalanche, etc.) will work perfectly! You can also send tokens like USDT, USDC, DAI, and other ERC-20 tokens to this address.*
