@@ -1,177 +1,209 @@
-# System Prompts MCP Server
+# 📝 System Prompts MCP Server
 
-Expose the prompt collection in this repository as a Model Context Protocol (MCP) server. Each prompt, summary, or tool definition maps to a dedicated MCP tool so your client can fetch the exact configuration it needs (e.g. Devin system prompt, Cursor summary) on demand.
+> **Access system prompts from AI tools in your workflow.** Browse and fetch prompts from Devin, Cursor, Claude, GPT, and more. Model-aware suggestions help you find the perfect prompt for your LLM.
 
-The original prompt archive README now lives under `prompts/README.md`.
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that exposes a collection of system prompts, summaries, and tool definitions from popular AI tools as MCP tools for AI coding environments like Cursor and Claude Desktop.
 
----
+## Why Use System Prompts MCP?
+
+- 🔍 **Automatic Discovery** – Every prompt in `prompts/` is automatically exposed as an MCP tool
+- 🎯 **Model-Aware Suggestions** – Get prompt recommendations based on your LLM (Claude, GPT, Gemini, etc.)
+- 📚 **Comprehensive Collection** – Access prompts from Devin, Cursor, Claude, GPT, and more
+- 🚀 **Easy Setup** – One-click install in Cursor or simple manual setup
+- 🔧 **Extensible** – Add your own prompts and they're automatically available
+
+## Quick Start
+
+Ready to explore system prompts? Install in seconds:
+
+**Install in Cursor (Recommended):**
+
+[🔗 Install in Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=system-prompts-mcp&config=eyJzeXN0ZW0tcHJvbXB0cy1tY3AiOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJzeXN0ZW0tcHJvbXB0cy1tY3Atc2VydmVyIl19fQ==)
+
+**Or install manually:**
+
+```bash
+npm install -g system-prompts-mcp-server
+# Or from source:
+git clone https://github.com/JamesANZ/system-prompts-and-models-of-ai-tools.git
+cd system-prompts-and-models-of-ai-tools && npm install && npm run build
+```
 
 ## Features
 
-- **Automatic discovery** – every text/yaml/json prompt in `prompts/` (or any directory you point to) is scanned and exposed as an MCP tool.
-- **Model-aware suggestions** – `get_prompt_suggestion` ranks prompts against the LLM you’re using (Claude, GPT, Gemini, etc.) and the keywords you provide.
-- **Quick browsing** – `list_prompts` filters by service, flavor (`summary`, `system`, `tools`), or provider hints.
-- **Persona activation** – each tool call includes a reminder for the model to embody the loaded prompt so it behaves like the original service.
-- **Structured responses** – tool calls return both raw file contents and metadata (service, variant, path, inferred LLM family, persona hint).
+### Core Tools
+- **`list_prompts`** – Browse available prompts with filters (service, flavor, provider)
+- **`get_prompt_suggestion`** – Get ranked prompt suggestions for your LLM and keywords
+- **`<service>-<variant>-<flavor>`** – Direct access to any prompt (e.g., `cursor-agent-system`, `devin-summary`)
 
----
+### Automatic Discovery
+- Scans `prompts/` directory for `.txt`, `.md`, `.yaml`, `.yml`, `.json` files
+- Each file becomes a dedicated MCP tool
+- Infers metadata (service, variant, LLM family, persona hints)
 
-## Project Layout
+### Persona Activation
+- Each tool call includes a reminder for the model to embody the loaded prompt
+- Helps models behave like the original service (Devin, Cursor, etc.)
 
-- `src/` – TypeScript MCP server implementation
-  - `index.ts` registers tools (`list_prompts`, `get_prompt_suggestion`, plus one tool per prompt file)
-  - `config/prompts.ts` discovers prompt files and infers metadata
-  - `lib/` helpers for slugging, LLM detection, and ranking
-- `dist/` – compiled JavaScript (created by the build step)
-- `prompts/` – full prompt library and original documentation
+## Installation
 
----
+### Cursor (One-Click)
 
-## Getting Started
-
-### Installing in Cursor
-
-You can install this MCP server directly in Cursor using the one-click install link:
-
-**🔗 [Install in Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=system-prompts-mcp&config=eyJzeXN0ZW0tcHJvbXB0cy1tY3AiOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJzeXN0ZW0tcHJvbXB0cy1tY3Atc2VydmVyIl19fQ==)**
+Click the install link above or use:
 
 ```
 cursor://anysphere.cursor-deeplink/mcp/install?name=system-prompts-mcp&config=eyJzeXN0ZW0tcHJvbXB0cy1tY3AiOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJzeXN0ZW0tcHJvbXB0cy1tY3Atc2VydmVyIl19fQ==
 ```
 
-This will automatically configure the MCP server using `npx`. No API keys are required.
+### Manual Installation
 
-### Install from Source
+**Requirements:** Node.js 18+ and npm
 
 ```bash
+# Clone and build
+git clone https://github.com/JamesANZ/system-prompts-and-models-of-ai-tools.git
+cd system-prompts-and-models-of-ai-tools
 npm install
 npm run build
+
+# Run server
+npm start
 ```
 
-> `npm install` automatically registers this server with Claude Desktop (if present) by updating `~/Library/Application Support/Claude/claude_desktop_config.json`. You can opt out by removing the `postinstall` script from `package.json`.
+### Claude Desktop
 
-Start the server on stdio (suitable for Claude Desktop, Cursor MCP, etc.):
+Add to `claude_desktop_config.json`:
 
-```bash
-npm run start
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "system-prompts-mcp": {
+      "command": "node",
+      "args": ["/absolute/path/to/system-prompts-and-models-of-ai-tools/dist/index.js"],
+      "env": {
+        "PROMPT_LIBRARY_ROOT": "/absolute/path/to/system-prompts-and-models-of-ai-tools/prompts"
+      }
+    }
+  }
+}
 ```
 
-Run in watch/dev mode:
+Restart Claude Desktop after configuration.
 
-```bash
-npm run dev
+## Usage Examples
+
+### List Available Prompts
+Browse prompts with optional filters:
+
+```json
+{
+  "tool": "list_prompts",
+  "arguments": {
+    "service": "cursor",
+    "flavor": "system",
+    "limit": 10
+  }
+}
 ```
 
-**Environment variables**
+### Get Prompt Suggestions
+Find the best prompt for your LLM and use case:
 
-- `PROMPT_LIBRARY_ROOT` (optional) – override the prompt root. If unset, the server automatically prefers `prompts/` (when available) and falls back to the repository root.
+```json
+{
+  "tool": "get_prompt_suggestion",
+  "arguments": {
+    "userLlm": "claude-3.5-sonnet",
+    "keywords": ["code", "pair programming"]
+  }
+}
+```
 
----
+### Access a Specific Prompt
+Call a prompt directly by its tool name:
 
-## Adding Your Own System Prompts
+```json
+{
+  "tool": "cursor-agent-system",
+  "arguments": {}
+}
+```
 
-You can add your own prompts by placing files in the `prompts/` directory. The server automatically discovers and exposes them as MCP tools.
+Get structured metadata only:
+
+```json
+{
+  "tool": "cursor-agent-system",
+  "arguments": {
+    "format": "json"
+  }
+}
+```
+
+## Adding Your Own Prompts
+
+Add prompts by placing files in the `prompts/` directory:
 
 **Supported formats:** `.txt`, `.md`, `.yaml`, `.yml`, `.json`
 
 **Directory structure:**
-- Directory names become the service name
-- File names create tool variants
-- Files are automatically classified as system prompts, tools, or summaries
-
-**Example:**
 ```
 prompts/My Service/
   ├── System Prompt.txt     → Tool: "my-service-system-prompt-system"
   └── tools.json            → Tool: "my-service-tools-tools"
 ```
 
-After adding prompts, restart the MCP server. Use `list_prompts` to find your custom prompts or call them directly by their tool name.
+- Directory names become the service name
+- File names create tool variants
+- Files are automatically classified as system prompts, tools, or summaries
 
-To use a different directory, set the `PROMPT_LIBRARY_ROOT` environment variable.
+After adding prompts, restart the MCP server. Use `list_prompts` to find your custom prompts.
 
----
+**Custom directory:** Set `PROMPT_LIBRARY_ROOT` environment variable to use a different location.
 
-## MCP Tools
+## Use Cases
 
-| Tool                           | Description                                                                                                                             |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `list_prompts`                 | Lists available prompts with optional filters (`service`, `flavor`, `provider`, `limit`).                                               |
-| `get_prompt_suggestion`        | Suggests the best prompt for a given LLM/service/keywords, returning ranked alternatives.                                               |
-| `<service>-<variant>-<flavor>` | One tool per prompt resource (e.g. `cursor-agent-system` or `devin-summary`). Returns the file contents plus a persona activation hint. |
+- **AI Tool Developers** – Reference and adapt prompts from successful AI tools
+- **Researchers** – Study how different tools structure their system prompts
+- **Developers** – Find the perfect prompt for your LLM and use case
+- **Prompt Engineers** – Compare and learn from proven prompt patterns
 
-**Example:**
+## Technical Details
 
-```jsonc
-// Call list_prompts with filters
-{
-  "name": "list_prompts",
-  "arguments": { "service": "cursor", "flavor": "system" },
-}
-```
+**Built with:** Node.js, TypeScript, MCP SDK  
+**Dependencies:** `@modelcontextprotocol/sdk`, `zod`  
+**Platforms:** macOS, Windows, Linux
 
-```jsonc
-// Ask for a suggestion tailored to Claude
-{
-  "name": "get_prompt_suggestion",
-  "arguments": {
-    "userLlm": "claude-3.5-sonnet",
-    "keywords": ["code", "pair programming"],
-  },
-}
-```
+**Environment Variables:**
+- `PROMPT_LIBRARY_ROOT` (optional): Override prompt root directory (defaults to `prompts/`)
 
-Once you have a tool name (e.g. `cursor-agent-system`), call it with optional `format: "json"` to receive structured metadata only.
+**Project Structure:**
+- `src/` – TypeScript MCP server implementation
+- `dist/` – Compiled JavaScript
+- `prompts/` – Prompt library and original documentation
 
----
+## Contributing
 
-## Claude Desktop Integration
+⭐ **If this project helps you, please star it on GitHub!** ⭐
 
-Add the server to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Contributions welcome! Feel free to adapt the discovery logic, add tests, or extend metadata inference for new prompt formats.
 
-```jsonc
-"system-prompts-mcp": {
-  "command": "/Users/<you>/.nvm/versions/node/v22.17.0/bin/node",
-  "args": [
-    "/Users/<you>/Documents/projects/system-prompts-and-models-of-ai-tools/dist/index.js"
-  ],
-  "env": {
-    "PROMPT_LIBRARY_ROOT": "/Users/<you>/Documents/projects/system-prompts-and-models-of-ai-tools/prompts"
-  }
-}
-```
+## License
 
-Restart Claude Desktop to load the new MCP server, then ask for prompts by name or use the suggestion tool.
+See the original repository for license information.
 
----
+## Support
 
-## Development
-
-- `npm run dev` – run with `ts-node` for quick iteration
-- `npm run lint` – type-check without emitting files
-
-Contributions welcome—feel free to adapt the discovery logic, add tests, or extend metadata inference for new prompt formats.
-
-## Donate
-
-If you find this project useful, consider supporting it with Bitcoin:
+If you find this project useful, consider supporting it:
 
 **⚡ Lightning Network**
+```
+lnbc1pjhhsqepp5mjgwnvg0z53shm22hfe9us289lnaqkwv8rn2s0rtekg5vvj56xnqdqqcqzzsxqyz5vqsp5gu6vh9hyp94c7t3tkpqrp2r059t4vrw7ps78a4n0a2u52678c7yq9qyyssq7zcferywka50wcy75skjfrdrk930cuyx24rg55cwfuzxs49rc9c53mpz6zug5y2544pt8y9jflnq0ltlha26ed846jh0y7n4gm8jd3qqaautqa
+```
 
-<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/lightning.jpeg" alt="Lightning QR Code" width="120" />
+**₿ Bitcoin**: [bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp](https://mempool.space/address/bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp)
 
-<code>lnbc1pjhhsqepp5mjgwnvg0z53shm22hfe9us289lnaqkwv8rn2s0rtekg5vvj56xnqdqqcqzzsxqyz5vqsp5gu6vh9hyp94c7t3tkpqrp2r059t4vrw7ps78a4n0a2u52678c7yq9qyyssq7zcferywka50wcy75skjfrdrk930cuyx24rg55cwfuzxs49rc9c53mpz6zug5y2544pt8y9jflnq0ltlha26ed846jh0y7n4gm8jd3qqaautqa</code>
-
-**₿ On-Chain**
-
-<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/onchain.jpg" alt="Bitcoin Address QR Code" width="120" />
-
-<code>[bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp](https://mempool.space/address/bc1ptzvr93pn959xq4et6sqzpfnkk2args22ewv5u2th4ps7hshfaqrshe0xtp)</code>
-
-**Ξ Ethereum / EVM Networks**
-
-<img src="https://raw.githubusercontent.com/bitcoinwarrior1/CitySats/main/public/ethereum.jpg" alt="Ethereum Address QR Code" width="120" />
-
-<code>[0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f](https://etherscan.io/address/0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f)</code>
-
-*Donations from any EVM-compatible network (Ethereum, Polygon, Arbitrum, Optimism, BSC, Avalanche, etc.) will work perfectly! You can also send tokens like USDT, USDC, DAI, and other ERC-20 tokens to this address.*
+**Ξ Ethereum/EVM**: [0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f](https://etherscan.io/address/0x42ea529282DDE0AA87B42d9E83316eb23FE62c3f)
