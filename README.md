@@ -12,6 +12,10 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that e
 - 🚀 **Easy Setup** – One-click install in Cursor or simple manual setup
 - 🔧 **Extensible** – Add your own prompts and they're automatically available
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/jamesanz-system-prompts-mcp-server).
+
 ## Quick Start
 
 Ready to explore system prompts? Install in seconds:
