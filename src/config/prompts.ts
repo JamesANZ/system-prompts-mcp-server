@@ -27,7 +27,8 @@ function resolveRoot(): string {
   }
 
   const currentFile = fileURLToPath(import.meta.url);
-  const repoRoot = path.resolve(path.dirname(currentFile), "../../..");
+  // dist/config/prompts.js and src/config/prompts.ts both sit two levels below the repo root.
+  const repoRoot = path.resolve(path.dirname(currentFile), "../..");
   const promptsDir = path.join(repoRoot, "prompts");
 
   if (fs.existsSync(promptsDir) && fs.statSync(promptsDir).isDirectory()) {

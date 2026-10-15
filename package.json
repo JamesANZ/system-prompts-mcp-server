@@ -4,8 +4,11 @@
   "description": "Model Context Protocol server exposing system prompt files and summaries.",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "system-prompts-mcp-server": "./dist/index.js"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && chmod 755 dist/index.js",
     "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm src/index.ts",
     "lint": "tsc --noEmit",
